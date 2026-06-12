@@ -9,7 +9,6 @@ MAKE_GOALS="${MAKE_GOALS}
 dtbs
 "
 KERNEL_DIR=kernel
-TARGET_SOC=s5e8835
 GKI_DEFCONFIG=gki_defconfig
 DEFCONFIG=erd8835_t_gki_defconfig
 FRAGMENT_CONFIG=erd8835_t_defconfig
