@@ -8649,6 +8649,178 @@
 		};
 	};
 
+	fragment@fstab {
+		target-path = "/";
+
+		__overlay__ {
+
+			firmware {
+				android {
+					compatible = "android,firmware";
+
+					fstab {
+						compatible = "android,fstab";
+
+						system_erofs {
+							dev = "system";
+							mnt_point = "/system";
+							type = "erofs";
+							mnt_flags = "ro";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						system_ext4 {
+							dev = "system";
+							mnt_point = "/system";
+							type = "ext4";
+							mnt_flags = "ro,barrier=1";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						system_f2fs {
+							dev = "system";
+							mnt_point = "/system";
+							type = "f2fs";
+							mnt_flags = "ro";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						system_ext_erofs {
+							dev = "system_ext";
+							mnt_point = "/system_ext";
+							type = "erofs";
+							mnt_flags = "ro";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						system_ext_ext4 {
+							dev = "system_ext";
+							mnt_point = "/system_ext";
+							type = "ext4";
+							mnt_flags = "ro,barrier=1";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						vendor_erofs {
+							dev = "vendor";
+							mnt_point = "/vendor";
+							type = "erofs";
+							mnt_flags = "ro";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						vendor_ext4 {
+							dev = "vendor";
+							mnt_point = "/vendor";
+							type = "ext4";
+							mnt_flags = "ro,barrier=1";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						vendor_dlkm_erofs {
+							dev = "vendor_dlkm";
+							mnt_point = "/vendor_dlkm";
+							type = "erofs";
+							mnt_flags = "ro";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						vendor_dlkm_ext4 {
+							dev = "vendor_dlkm";
+							mnt_point = "/vendor_dlkm";
+							type = "ext4";
+							mnt_flags = "ro,barrier=1";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						product_erofs {
+							dev = "product";
+							mnt_point = "/product";
+							type = "erofs";
+							mnt_flags = "ro";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						product_ext4 {
+							dev = "product";
+							mnt_point = "/product";
+							type = "ext4";
+							mnt_flags = "ro,errors=panic";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						odm_erofs {
+							dev = "odm";
+							mnt_point = "/odm";
+							type = "erofs";
+							mnt_flags = "ro";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						odm_ext4 {
+							dev = "odm";
+							mnt_point = "/odm";
+							type = "ext4";
+							mnt_flags = "ro,errors=panic";
+							fsmgr_flags = "wait,logical,first_stage_mount";
+						};
+						metadata {
+							dev = "/dev/block/by-name/metadata";
+							mnt_point = "/metadata";
+							type = "ext4";
+							mnt_flags = "noatime,nosuid,nodev,noauto_da_alloc,discard,journal_checksum,data=ordered,errors=panic";
+							fsmgr_flags = "wait,formattable,first_stage_mount,check";
+						};
+						cache {
+							dev = "/dev/block/by-name/cache";
+							mnt_point = "/cache";
+							type = "ext4";
+							mnt_flags = "noatime,nosuid,nodev,noauto_da_alloc,discard,journal_checksum,data=ordered,errors=panic";
+							fsmgr_flags = "wait,formattable,check";
+						};
+						boot {
+							dev = "/dev/block/by-name/boot";
+							mnt_point = "/boot";
+							type = "emmc";
+							mnt_flags = "defaults";
+							fsmgr_flags = "first_stage_mount,formattable,avb=boot";
+						};
+						init_boot {
+							dev = "/dev/block/by-name/init_boot";
+							mnt_point = "/init_boot";
+							type = "emmc";
+							mnt_flags = "defaults";
+							fsmgr_flags = "first_stage_mount,formattable,avb=init_boot";
+						};
+						vendor_boot {
+							dev = "/dev/block/by-name/vendor_boot";
+							mnt_point = "/vendor_boot";
+							type = "emmc";
+							mnt_flags = "defaults";
+							fsmgr_flags = "first_stage_mount,formattable,avb=vendor_boot";
+						};
+						dtbo {
+							dev = "/dev/block/by-name/dtbo";
+							mnt_point = "/dtbo";
+							type = "emmc";
+							mnt_flags = "defaults";
+							fsmgr_flags = "first_stage_mount,formattable,avb=dtbo";
+						};
+						vbmeta {
+							dev = "/dev/block/by-name/vbmeta";
+							mnt_point = "/vbmeta";
+							type = "emmc";
+							mnt_flags = "defaults";
+							fsmgr_flags = "first_stage_mount,formattable,avb=vbmeta";
+						};
+						recovery {
+							dev = "/dev/block/by-name/recovery";
+							mnt_point = "/recovery";
+							type = "emmc";
+							mnt_flags = "defaults";
+							fsmgr_flags = "first_stage_mount";
+						};
+						misc {
+							dev = "/dev/block/by-name/misc";
+							mnt_point = "/misc";
+							type = "emmc";
+							mnt_flags = "defaults";
+							fsmgr_flags = "defaults,first_stage_mount";
+						};
+					};
+				};
+			};
+		};
+	};
+
 	__symbols__ {
 		smd = "/fragment@smd/__overlay__/samsung_mobile_device";
 		vib_info = "/fragment@smd/__overlay__/samsung_mobile_device/vibrator_info";
