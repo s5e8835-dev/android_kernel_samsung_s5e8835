@@ -3138,9 +3138,9 @@ static int abox_download_firmware(struct device *dev)
 
 	ret = abox_core_download_firmware();
 	if (ret < 0) {
-		/* If core firmware failed, try one more time after a short delay */
-		abox_dbg(dev, "Core firmware download failed, retrying once\n");
-		msleep(100);
+		/* If core firmware failed, retry after delay for unify bind-mount */
+		abox_dbg(dev, "Core firmware download failed, retrying after bind-mount\n");
+		msleep(500);
 		ret = abox_core_download_firmware();
 		if (ret < 0) {
 			abox_dbg(dev, "Core firmware download failed after retry\n");
