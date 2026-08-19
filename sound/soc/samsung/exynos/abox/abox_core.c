@@ -454,7 +454,7 @@ static int abox_core_load_firmware(struct abox_core *core,
 	int ret;
 
 	ret = request_firmware_direct(&fw->firmware, fw->name, core->dev);
-	if (ret == 0 && fw->firmware && fw->firmware->size == 0) {
+	if (ret == 0 && fw->firmware && fw->firmware->size < 1024) {
 		release_firmware(fw->firmware);
 		fw->firmware = NULL;
 		ret = -ENOENT;
@@ -462,10 +462,10 @@ static int abox_core_load_firmware(struct abox_core *core,
 	if (ret < 0)
 		ret = request_firmware(&fw->firmware, fw->name, core->dev);
 	if (ret >= 0) {
-		/* Validate firmware - reject empty files */
-		if (!fw->firmware || fw->firmware->size == 0) {
-			abox_warn(dev, "%s invalid firmware (0 bytes) - will retry later\n",
-					fw->name);
+		/* Validate firmware - reject placeholder/empty files */
+		if (!fw->firmware || fw->firmware->size < 1024) {
+			abox_warn(dev, "%s invalid firmware (%zu bytes) - will retry later\n",
+					fw->name, fw->firmware ? fw->firmware->size : (size_t)0);
 			release_firmware(fw->firmware);
 			fw->firmware = NULL;
 			ret = -EAGAIN;
@@ -523,9 +523,9 @@ int abox_core_download_firmware(void)
 			}
 
 			/* Validate firmware before processing */
-			if (!fw->firmware || fw->firmware->size == 0) {
-				abox_err(dev, "%s: firmware is invalid (0 bytes)\n", 
-					fw->name);
+			if (!fw->firmware || fw->firmware->size < 1024) {
+				abox_err(dev, "%s: firmware is invalid (%zu bytes)\n",
+					fw->name, fw->firmware ? fw->firmware->size : (size_t)0);
 				/* Clear invalid firmware so it can be retried */
 				if (fw->firmware) {
 					release_firmware(fw->firmware);
