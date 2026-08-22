@@ -171,7 +171,7 @@ static void synaptics_ts_status_event(struct synaptics_ts_data *ts, u8 *event_bu
 	if (p_event_status->stype == SYNAPTICS_TS_TOUCHTYPE_PROXIMITY) {
 		if (p_event_status->status_id == SYNAPTICS_TS_STATUS_EVENT_VENDOR_PROXIMITY) {
 			ts->hover_event = p_event_status->status_data_1;
-			sec_input_proximity_report(&ts->client->dev, p_event_status->status_data_1);
+			sec_input_proximity_report(&ts->client->dev, !p_event_status->status_data_1);
 		}
 	}
 
