@@ -2147,6 +2147,9 @@ retry_pmode:
 	else
 		ts->plat_data->power_state = SEC_INPUT_STATE_POWER_ON;
 
+	if (ts->plat_data->ed_enable)
+		synaptics_ts_ear_detect_enable(ts, ts->plat_data->ed_enable);
+
 i2c_error:
 	input_info(true, &ts->client->dev, "%s: end %d\n", __func__, ret);
 
