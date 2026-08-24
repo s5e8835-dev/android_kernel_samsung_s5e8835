@@ -3271,6 +3271,8 @@ static int aw8622x_haptic_play_effect_seq(struct aw8622x *aw8622x,
 		if (aw8622x->activate_mode == AW8622X_RAM_LOOP_MODE) {
 			aw8622x_haptic_set_repeat_wav_seq(aw8622x,
 							  aw8622x->ram.ram_num);
+			aw8622x_haptic_effect_strength(aw8622x);
+			aw8622x_haptic_set_gain(aw8622x, aw8622x->level);
 			aw8622x_haptic_play_repeat_seq(aw8622x, true);
 		}
 	}
