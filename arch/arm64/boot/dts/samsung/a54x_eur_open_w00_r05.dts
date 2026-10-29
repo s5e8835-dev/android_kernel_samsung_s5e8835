@@ -2798,13 +2798,6 @@
 				exynos,cmd_underrun_cnt = <0x88c>;
 			};
 
-			1080x2340@60hs {
-				exynos,pmsk = <0x04 0xaa 0x02 0x7627 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00>;
-				exynos,hs-clk = <0x454>;
-				exynos,esc-clk = <0x14>;
-				exynos,cmd_underrun_cnt = <0x1ede>;
-			};
-
 			1080x2340@30ns {
 				exynos,pmsk = <0x04 0xaa 0x02 0x7627 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00>;
 				exynos,hs-clk = <0x454>;
@@ -2821,7 +2814,7 @@
 
 			a54x_fc5_panel_display_modes {
 				native-mode = <0x16>;
-				exposed-mode = <0x16 0x17 0x18 0x19>;
+				exposed-mode = <0x16 0x17 0x19>;
 				phandle = <0x2c>;
 
 				a54x_panel_display_mode_1080x2340_120hs {
@@ -2868,29 +2861,6 @@
 					dsc_slice_h = <0x1e>;
 					cmd_lp_ref = <0x83b>;
 					phandle = <0x17>;
-				};
-
-				a54x_panel_display_mode_1080x2340_60hs {
-					id = "1080x2340_60HS";
-					width = <0x438>;
-					height = <0x924>;
-					refresh_rate = <0x3c>;
-					refresh_mode = <0x01>;
-					panel_refresh_rate = <0x3c>;
-					panel_refresh_mode = <0x01>;
-					panel_te_st = <0x00>;
-					panel_te_ed = <0x00>;
-					panel_te_sw_skip_count = <0x00>;
-					panel_te_hw_skip_count = <0x00>;
-					panel_h_porch = <0x00 0x00 0x00>;
-					panel_v_porch = <0x980 0x00 0x00>;
-					dsc_en = <0x01>;
-					dsc_cnt = <0x01>;
-					dsc_slice_num = <0x02>;
-					dsc_slice_w = <0x21c>;
-					dsc_slice_h = <0x1e>;
-					cmd_lp_ref = <0x1f37>;
-					phandle = <0x18>;
 				};
 
 				a54x_panel_display_mode_1080x2340_30ns {
@@ -8852,7 +8822,6 @@
 		a54x_fc5_panel_display_modes = "/fragment@panel_display_mode/__overlay__/a54x_fc5_panel_display_modes";
 		a54x_panel_display_mode_1080x2340_120hs = "/fragment@panel_display_mode/__overlay__/a54x_fc5_panel_display_modes/a54x_panel_display_mode_1080x2340_120hs";
 		a54x_panel_display_mode_1080x2340_60phs = "/fragment@panel_display_mode/__overlay__/a54x_fc5_panel_display_modes/a54x_panel_display_mode_1080x2340_60phs";
-		a54x_panel_display_mode_1080x2340_60hs = "/fragment@panel_display_mode/__overlay__/a54x_fc5_panel_display_modes/a54x_panel_display_mode_1080x2340_60hs";
 		a54x_panel_display_mode_1080x2340_30ns = "/fragment@panel_display_mode/__overlay__/a54x_fc5_panel_display_modes/a54x_panel_display_mode_1080x2340_30ns";
 		panel_drv_0 = "/fragment@panel_drv/__overlay__/panel_drv_0";
 		s6e3fc5_a54x_power_ctrl = "/fragment@panel_drv/__overlay__/panel_drv_0/s6e3fc5_a54x_power_ctrl";
@@ -9293,7 +9262,7 @@
 
 				a54x_fc5_panel_display_modes {
 					native-mode = <0x00>;
-					exposed-mode = <0x00 0x04 0x08 0x0c>;
+					exposed-mode = <0x00 0x04 0x08>;
 				};
 			};
 		};
