@@ -86,14 +86,17 @@ static void synaptics_ts_gesture_event(struct synaptics_ts_data *ts, u8 *event_b
 		if (p_gesture_status->gesture_id == SYNAPTICS_TS_GESTURE_ID_FOD_LONG ||
 			p_gesture_status->gesture_id == SYNAPTICS_TS_GESTURE_ID_FOD_NORMAL) {
 			sec_input_gesture_report(&ts->client->dev, SPONGE_EVENT_TYPE_FOD_PRESS, x, y);
+			sysfs_notify(&ts->sec.fac_dev->kobj, NULL, "scrub_pos");
 			input_info(true, &ts->client->dev, "%s: FOD %sPRESS\n",
 					__func__, p_gesture_status->gesture_id ? "" : "LONG");
 		} else if (p_gesture_status->gesture_id == SYNAPTICS_TS_GESTURE_ID_FOD_RELEASE) {
 			sec_input_gesture_report(&ts->client->dev, SPONGE_EVENT_TYPE_FOD_RELEASE, x, y);
+			sysfs_notify(&ts->sec.fac_dev->kobj, NULL, "scrub_pos");
 			input_info(true, &ts->client->dev, "%s: FOD RELEASE\n", __func__);
 			memset(ts->plat_data->fod_data.vi_data, 0x0, ts->plat_data->fod_data.vi_size);
 		} else if (p_gesture_status->gesture_id == SYNAPTICS_TS_GESTURE_ID_FOD_OUT) {
 			sec_input_gesture_report(&ts->client->dev, SPONGE_EVENT_TYPE_FOD_OUT, x, y);
+			sysfs_notify(&ts->sec.fac_dev->kobj, NULL, "scrub_pos");
 			input_info(true, &ts->client->dev, "%s: FOD OUT\n", __func__);
 		} else if (p_gesture_status->gesture_id == SYNAPTICS_TS_GESTURE_ID_FOD_VI) {
 			if ((ts->plat_data->lowpower_mode & SEC_TS_MODE_SPONGE_PRESS) && ts->plat_data->support_fod_lp_mode)
