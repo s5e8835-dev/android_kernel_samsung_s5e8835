@@ -443,6 +443,7 @@ static ssize_t scrub_position_show(struct device *dev,
 	snprintf(buff, sizeof(buff), "%d %d %d", ts->plat_data->gesture_id,
 			ts->plat_data->gesture_x, ts->plat_data->gesture_y);
 
+	ts->plat_data->gesture_id = 0;
 	ts->plat_data->gesture_x = 0;
 	ts->plat_data->gesture_y = 0;
 
