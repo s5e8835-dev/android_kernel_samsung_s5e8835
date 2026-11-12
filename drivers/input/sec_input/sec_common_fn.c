@@ -649,6 +649,16 @@ static void sec_input_coord_report(struct device *dev, u8 t_id)
 			pdata->hw_param.check_multi = 0;
 			pdata->print_info_cnt_release = 0;
 			pdata->palm_flag = 0;
+			/*
+			 * A FOD press that unlocked the device never gets a FOD release, as
+			 * fingerprint detection stops first. Drop it once the finger is lifted,
+			 * so scrub_pos doesn't report it as a new press later on.
+			 */
+			if (pdata->gesture_id == SPONGE_EVENT_TYPE_FOD_PRESS) {
+				pdata->gesture_id = 0;
+				pdata->gesture_x = 0;
+				pdata->gesture_y = 0;
+			}
 		}
 		input_report_key(pdata->input_dev, BTN_PALM, pdata->palm_flag);
 	} else if (action == SEC_TS_COORDINATE_ACTION_PRESS || action == SEC_TS_COORDINATE_ACTION_MOVE) {
