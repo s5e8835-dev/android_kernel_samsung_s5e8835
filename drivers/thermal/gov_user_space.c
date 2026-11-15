@@ -25,7 +25,18 @@
 static int notify_user_space(struct thermal_zone_device *tz, int trip)
 {
 	char *thermal_prop[5];
-	int i;
+	int i, trip_temp;
+
+	/*
+	 * The governor runs for every trip on every poll. Only tell user space
+	 * when a trip is crossed or the event was explicit, instead of flooding
+	 * it with a uevent per trip per poll.
+	 */
+	if (tz->notify_event == THERMAL_EVENT_UNSPECIFIED &&
+	    tz->last_temperature != THERMAL_TEMP_INVALID &&
+	    !tz->ops->get_trip_temp(tz, trip, &trip_temp) &&
+	    (tz->last_temperature >= trip_temp) == (tz->temperature >= trip_temp))
+		return 0;
 
 	mutex_lock(&tz->lock);
 	thermal_prop[0] = kasprintf(GFP_KERNEL, "NAME=%s", tz->type);
