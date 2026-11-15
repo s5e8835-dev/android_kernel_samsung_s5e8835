@@ -130,6 +130,7 @@ static struct device_attribute sec_battery_attrs[] = {
 	SEC_BATTERY_ATTR(batt_after_manufactured),
 #endif
 	SEC_BATTERY_ATTR(battery_cycle_test),
+	SEC_BATTERY_ATTR(batt_discharge_level),
 	SEC_BATTERY_ATTR(batt_wpc_temp),
 	SEC_BATTERY_ATTR(batt_wpc_temp_adc),
 	SEC_BATTERY_ATTR(mst_switch_test), /* MFC MST switch test */
@@ -849,6 +850,9 @@ ssize_t sec_bat_show_attrs(struct device *dev,
 		i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", battery->batt_cycle);
 		break;
 	case BATTERY_CYCLE_TEST:
+		break;
+	case BATT_DISCHARGE_LEVEL:
+		i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", battery->batt_discharge_level);
 		break;
 	case BATT_WPC_TEMP:
 		value.intval = sec_bat_get_temperature(battery->dev, &battery->pdata->wpc_thm_info, 0,
@@ -2941,6 +2945,16 @@ ssize_t sec_bat_store_attrs(
 	case BATTERY_CYCLE_TEST:
 		sec_bat_aging_check(battery);
 	break;
+	case BATT_DISCHARGE_LEVEL:
+		if (sscanf(buf, "%10d\n", &x) == 1) {
+			/* only ever move forward, so a stale saved value can't roll it back */
+			if (x > battery->batt_discharge_level) {
+				battery->batt_discharge_level = x;
+				sec_bat_set_cycle_from_discharge_level(battery);
+			}
+			ret = count;
+		}
+		break;
 	case BATT_WPC_TEMP:
 		break;
 	case BATT_WPC_TEMP_ADC:
