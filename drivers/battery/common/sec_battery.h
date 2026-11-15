@@ -1171,6 +1171,7 @@ struct sec_battery_info {
 #endif
 	struct delayed_work slowcharging_work;
 	int batt_cycle;
+	int batt_discharge_level;
 	int batt_asoc;
 #if IS_ENABLED(CONFIG_STEP_CHARGING)
 	bool step_charging_skip_lcd_on;
@@ -1322,6 +1323,7 @@ extern void sec_bat_set_temp_control_test(struct sec_battery_info *battery, bool
 extern void sec_bat_get_battery_info(struct sec_battery_info *battery);
 extern int sec_bat_set_charging_current(struct sec_battery_info *battery);
 extern void sec_bat_aging_check(struct sec_battery_info *battery);
+extern void sec_bat_set_cycle_from_discharge_level(struct sec_battery_info *battery);
 
 extern void sec_bat_set_threshold(struct sec_battery_info *battery, int cable_type);
 extern void sec_bat_thermal_check(struct sec_battery_info *battery);

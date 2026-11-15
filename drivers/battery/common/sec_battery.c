@@ -90,6 +90,7 @@ static enum power_supply_property sec_battery_props[] = {
 #endif
 	POWER_SUPPLY_PROP_TIME_TO_FULL_NOW,
 	POWER_SUPPLY_PROP_CHARGE_COUNTER,
+	POWER_SUPPLY_PROP_CYCLE_COUNT,
 };
 
 static enum power_supply_property sec_power_props[] = {
@@ -2352,6 +2353,45 @@ void sec_bat_aging_check(struct sec_battery_info *battery)
 }
 EXPORT_SYMBOL(sec_bat_aging_check);
 
+void sec_bat_set_cycle_from_discharge_level(struct sec_battery_info *battery)
+{
+	int cycle;
+
+	if (battery->batt_discharge_level < 0)
+		return;
+
+	cycle = battery->batt_discharge_level / 100;
+	if (cycle == battery->batt_cycle)
+		return;
+
+	battery->batt_cycle = cycle;
+	battery->cisd.data[CISD_DATA_CYCLE] = cycle;
+	sec_bat_aging_check(battery);
+	sec_bat_check_battery_health(battery);
+}
+EXPORT_SYMBOL(sec_bat_set_cycle_from_discharge_level);
+
+/*
+ * Track the discharged SOC like the stock framework does, so the cycle count
+ * keeps moving without it: every 100% discharged is one cycle. User space seeds
+ * and saves the total through batt_discharge_level.
+ */
+static void sec_bat_account_discharge(struct sec_battery_info *battery, int prev_capacity)
+{
+	int drop = prev_capacity - battery->capacity;
+
+	if (battery->batt_discharge_level < 0 ||
+	    battery->status == POWER_SUPPLY_STATUS_CHARGING)
+		return;
+
+	/* ignore the probe default and fuel gauge resets */
+	if (prev_capacity <= 0 || prev_capacity > 100 || drop <= 0 || drop > 5)
+		return;
+
+	battery->batt_discharge_level += drop;
+	sec_bat_set_cycle_from_discharge_level(battery);
+}
+
 void sec_bat_check_battery_health(struct sec_battery_info *battery)
 {
 	static battery_health_condition default_table[3] =
@@ -3265,6 +3305,7 @@ void sec_bat_get_battery_info(struct sec_battery_info *battery)
 {
 	union power_supply_propval value = {0, };
 	char str[1024] = {0, };
+	int prev_capacity;
 
 	value.intval = SEC_BATTERY_VOLTAGE_MV;
 	psy_do_property(battery->pdata->fuelgauge_name, get,
@@ -3364,7 +3405,9 @@ void sec_bat_get_battery_info(struct sec_battery_info *battery)
 			POWER_SUPPLY_PROP_CAPACITY, value);
 	/* if the battery status was full, and SOC wasn't 100% yet,
 		then ignore FG SOC, and report (previous SOC +1)% */
+	prev_capacity = battery->capacity;
 	battery->capacity = value.intval;
+	sec_bat_account_discharge(battery, prev_capacity);
 
 	/* voltage information */
 #if IS_ENABLED(CONFIG_DUAL_BATTERY)
@@ -6500,6 +6543,11 @@ static int sec_bat_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CHARGE_COUNTER:
 		val->intval = battery->charge_counter;
 		break;
+	case POWER_SUPPLY_PROP_CYCLE_COUNT:
+		if (battery->batt_cycle < 0)
+			return -ENODATA;
+		val->intval = battery->batt_cycle;
+		break;
 	case POWER_SUPPLY_EXT_PROP_MIN ... POWER_SUPPLY_EXT_PROP_MAX:
 		switch (ext_psp) {
 		case POWER_SUPPLY_EXT_PROP_CHARGE_POWER:
@@ -9196,6 +9244,7 @@ static int sec_battery_probe(struct platform_device *pdev)
 	battery->usb_overheat_check = false;
 	battery->skip_cisd = false;
 	battery->batt_cycle = -1;
+	battery->batt_discharge_level = -1;
 	battery->pdata->age_step = 0;
 	battery->batt_asoc = 100;
 	battery->health_change = false;
