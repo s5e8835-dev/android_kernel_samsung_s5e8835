@@ -1252,6 +1252,9 @@ static int synaptics_ts_init(struct i2c_client *client)
 		goto error_allocate_mem;
 	}
 
+	/* Unknown is treated as near until the first proximity report arrives. */
+	ts->hover_event = 0xff;
+
 	synaptics_ts_parse_dt(&client->dev, ts);
 
 #if !IS_ENABLED(CONFIG_SAMSUNG_PRODUCT_SHIP)

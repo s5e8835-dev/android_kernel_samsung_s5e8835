@@ -58,6 +58,12 @@ static void synaptics_ts_fod_vi_event(struct synaptics_ts_data *ts)
 		input_info(true, &ts->client->dev, "%s: failed read fod vi\n", __func__);
 }
 
+static bool synaptics_ts_proximity_is_far(u8 hover_event)
+{
+	/* Use the same far values as the proximity input device. */
+	return !hover_event || hover_event == 5;
+}
+
 static void synaptics_ts_gesture_event(struct synaptics_ts_data *ts, u8 *event_buff)
 {
 	struct sec_gesture_event_data *p_gesture_status;
@@ -85,6 +91,15 @@ static void synaptics_ts_gesture_event(struct synaptics_ts_data *ts, u8 *event_b
 	} else if (p_gesture_status->stype  == SYNAPTICS_TS_GESTURE_CODE_PRESS) {
 		if (p_gesture_status->gesture_id == SYNAPTICS_TS_GESTURE_ID_FOD_LONG ||
 			p_gesture_status->gesture_id == SYNAPTICS_TS_GESTURE_ID_FOD_NORMAL) {
+			/* Keep the one-shot UDFPS sensor armed while proximity is near. */
+			if (ts->plat_data->power_state == SEC_INPUT_STATE_LPM &&
+					ts->plat_data->support_ear_detect &&
+					READ_ONCE(ts->plat_data->ed_enable) &&
+					!synaptics_ts_proximity_is_far(READ_ONCE(ts->hover_event))) {
+				input_info(true, &ts->client->dev, "%s: FOD press blocked by proximity\n",
+						__func__);
+				return;
+			}
 			sec_input_gesture_report(&ts->client->dev, SPONGE_EVENT_TYPE_FOD_PRESS, x, y);
 			sysfs_notify(&ts->sec.fac_dev->kobj, NULL, "scrub_pos");
 			input_info(true, &ts->client->dev, "%s: FOD %sPRESS\n",
@@ -173,9 +188,9 @@ static void synaptics_ts_status_event(struct synaptics_ts_data *ts, u8 *event_bu
 
 	if (p_event_status->stype == SYNAPTICS_TS_TOUCHTYPE_PROXIMITY) {
 		if (p_event_status->status_id == SYNAPTICS_TS_STATUS_EVENT_VENDOR_PROXIMITY) {
-			ts->hover_event = p_event_status->status_data_1;
+			WRITE_ONCE(ts->hover_event, p_event_status->status_data_1);
 			sec_input_proximity_report(&ts->client->dev,
-					p_event_status->status_data_1 == 5 || !p_event_status->status_data_1);
+					synaptics_ts_proximity_is_far(p_event_status->status_data_1));
 		}
 	}
 
